@@ -27,21 +27,6 @@ module.exports = (req, res) => {
         index.on('error', (error) => {
             console.log(error);
         });
-    } else if (pathname === '/cats/add-breed' && req.method === 'GET') {
-        filepath = path.normalize(path.join(__dirname, '../views/addBreed.html'));
-        const index = fs.createReadStream(filepath);
-
-        index.on('data', (data) => {
-            res.write(data);
-        });
-        
-        index.on('end', () => {
-            res.end();
-        });
-
-        index.on('error', (error) => {
-            console.log(error);
-        });
     } else if(pathname === '/cats/add-cat' && req.method === 'POST') {
         let form = new formidable.IncomingForm();
 
@@ -71,36 +56,6 @@ module.exports = (req, res) => {
                 });
             });
         });
-
-        res.writeHead(301, { location: '/' });
-    } else if(pathname === '/cats/add-breed' && req.method === 'POST') {
-        let rawData = "";
-
-        req.on('data', (data) => {
-            rawData += data;
-        });
-
-        req.on('end', () => {
-            let body = qs.parse(rawData);
-
-            fs.readFile('./data/breeds.json', (err, data) => {
-                if(err){
-                    throw err;
-                }
-
-                let breeds = JSON.parse(data);
-                breeds.push(body.breed);
-                let json = JSON.stringify(breeds);
-
-                fs.writeFile('./data/breeds.json', json, 'utf-8', () => {
-                    console.log(`The breed was uploaded succesfully.`)
-                    res.writeHead(301, { location: '/' });
-                    res.end();
-                });
-            });
-        });
-
-        res.writeHead(301, { location: '/' });
     } else if(pathname.includes('/cats-edit') && req.method === 'GET'){
         filepath = path.normalize(path.join(__dirname, '../views/editCat.html'));
         const index = fs.createReadStream(filepath);
@@ -162,6 +117,7 @@ module.exports = (req, res) => {
             
                 fs.writeFile('./data/cats.json', json, (err) => { 
                     if(err) {throw err};
+
                     res.writeHead(301, { location: '/' });
                     res.end();
                 });

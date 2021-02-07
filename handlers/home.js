@@ -32,12 +32,12 @@ module.exports = (req, res) => {
                 <p><span>Breed: </span>${cat.breed}</p>
                 <p><span>Description: </span>${cat.description}</p>
                 <ul class="buttons">
-                    <li class="btn edit" formmethod="GET"><a href="/cats-edit/${cat.id}">Change Info</a></li>
-                    <li class="btn delete" formmethod="GET"><a href="/cats-find-new-home/${cat.id}">New Home</a></li>
+                    <li class="btn edit" formmethod="GET"><a href="/cats-edit/${cat.id}">Change info</a></li>
+                    <li class="btn delete" formmethod="GET"><a href="/cats-find-new-home/${cat.id}">New home</a></li>
                 </ul>
             </li>`);
 
-            let modifiedData = data.toString().replace('{{cats}}', modifiedCats);
+            let modifiedData = data.toString().replace('{{cats}}', modifiedCats.join(""));
 
             res.writeHead(200, {
                 "Content-type": "text/html"
