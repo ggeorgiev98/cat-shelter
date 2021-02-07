@@ -1,0 +1,8 @@
+#"database" simple JSON files initially created like arrays "[]"
+/data/breeds.json
+/data/cats.json
+
+#content images - the images of your cats will be stored here
+/content/images
+
+/node_modules

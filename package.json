@@ -1,0 +1,15 @@
+{
+  "name": "01.-cat-shelter-workshop-resources",
+  "version": "1.0.0",
+  "description": "Cat shelter",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "author": "Georgi Georgiev",
+  "license": "ISC",
+  "dependencies": {
+    "formidable": "^1.2.2",
+    "nodemon": "^2.0.7"
+  }
+}
