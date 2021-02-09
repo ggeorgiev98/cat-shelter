@@ -47,7 +47,10 @@ module.exports = (req, res) => {
                 }
 
                 const allCats = JSON.parse(data);
-                allCats.push({ id: cats.length + 1, ...fields, image: files.upload.name });
+                let newId = allCats.length + 1;
+                if(allCats[-1].id == newId) {newId += 1};
+
+                allCats.push({ id: newId, ...fields, image: files.upload.name });
                 const json = JSON.stringify(allCats);
 
                 fs.writeFile('./data/cats.json', json, () => {
@@ -60,10 +63,10 @@ module.exports = (req, res) => {
         filepath = path.normalize(path.join(__dirname, '../views/editCat.html'));
         const index = fs.createReadStream(filepath);
         let catId = Number(pathname.split('/')[2]);
-        let cat = cats.filter((c) => c.id === catId)[0];
+        let cat = cats.find(c => c.id === catId);
 
         index.on('data', (data) => {
-           let modifiedData = data.toString().replace('{{id}}', catId);
+            let modifiedData = data.toString().replace('{{id}}', catId);
             modifiedData = modifiedData.replace('{{name}}', cat.name);
             modifiedData = modifiedData.replace('{{description}}', cat.description);
 
@@ -98,7 +101,7 @@ module.exports = (req, res) => {
                 });
             }
             
-            fs.readFile('./data/cats.json', 'utf-8', async (err, data) => {
+            fs.readFile('./data/cats.json', 'utf-8', (err, data) => {
                 if (err) {
                     throw err;
                 }
@@ -110,12 +113,10 @@ module.exports = (req, res) => {
                 newImage 
                 ? editedCat.image = files.upload.name
                 : editedCat.image = allCats[index].image;
-                console.log(editedCat)
                 allCats.splice(index, 1, editedCat);
                 let json = JSON.stringify(allCats);
-                console.log(allCats)
             
-                fs.writeFile('./data/cats.json', json, (err) => { 
+                fs.writeFile('./data/cats.json', json, "utf-8", (err) => { 
                     if(err) {throw err};
 
                     res.writeHead(301, { location: '/' });
@@ -124,12 +125,53 @@ module.exports = (req, res) => {
             });
         });
 
-    } else if(pathname.includes('/cats-find-new-home') && req.method === 'GET'){
-        filepath = path.normalize(path.join(__dirname, '../views/editCat.html'));
+    } else if(pathname.includes('/shelter') && req.method === 'GET'){
+        filepath = path.normalize(path.join(__dirname, '../views/catShelter.html'));
         const index = fs.createReadStream(filepath);
-    } else if(pathname.includes('/cats-find-new-home') && req.method === 'POST'){
-        filepath = path.normalize(path.join(__dirname, '../views/editCat.html'));
-        const index = fs.createReadStream(filepath);
+        
+        index.on('data', (data) => {
+            let catId = Number(pathname.split('/')[2]);
+            let shelterCat = cats.find(c => c.id === catId);
+            let src = path.join('./content/images/' + shelterCat.image)
+            let modifiedData = data.toString().replace('{{id}}', catId);
+            modifiedData = modifiedData.replace('{{src}}', src)
+            modifiedData = modifiedData.replace('{{name}}', shelterCat.name);
+            modifiedData = modifiedData.replace('{{description}}', shelterCat.description);
+            modifiedData = modifiedData.replace('{{breed}}', shelterCat.breed);
+            res.write(modifiedData);
+        });
+        
+        index.on('end', () => {
+            res.end();
+        });
+
+        index.on('error', (error) => {
+            console.log(error);
+        });
+    } else if(pathname.includes('/shelter') && req.method === 'POST'){
+        const form = formidable.IncomingForm();
+
+        form.parse(req, (err, fields, files) => {          
+            let catId = Number(pathname.split('/')[2]);
+            
+            
+            fs.readFile('./data/cats.json', 'utf-8', (err, data) => {
+                if (err) {
+                    throw err;
+                }
+                let allCats = JSON.parse(data);
+                let index = allCats.findIndex(x => x.id == catId);
+                allCats.splice(index, 1);
+                let json = JSON.stringify(allCats);
+            
+                fs.writeFile('./data/cats.json', json, "utf-8", (err) => { 
+                    if(err) {throw err};
+
+                    res.writeHead(301, { location: '/' });
+                    res.end();
+                });
+            });
+        });
     } else {
         return true;
     };

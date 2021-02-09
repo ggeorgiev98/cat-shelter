@@ -33,7 +33,7 @@ module.exports = (req, res) => {
                 <p><span>Description: </span>${cat.description}</p>
                 <ul class="buttons">
                     <li class="btn edit" formmethod="GET"><a href="/cats-edit/${cat.id}">Change info</a></li>
-                    <li class="btn delete" formmethod="GET"><a href="/cats-find-new-home/${cat.id}">New home</a></li>
+                    <li class="btn delete" formmethod="GET"><a href="/shelter/${cat.id}">New home</a></li>
                 </ul>
             </li>`);
 
